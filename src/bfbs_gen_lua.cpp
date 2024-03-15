@@ -466,7 +466,7 @@ class LuaBfbsGenerator : public BaseBfbsGenerator {
           code += "function " + object_name + ".Add" + field_name +
                   "(builder, " + variable_name + ")\n";
           code += "  builder:Prepend" +
-                  GenerateMethod(field->type()->base_type()) + "Slot(" +
+                  GenerateMethod(field->type()) + "Slot(" +
                   NumToString(field->id()) + ", " + variable_name + ", " +
                   DefaultValue(field) + ")\n";
           code += "end\n";
@@ -553,13 +553,13 @@ class LuaBfbsGenerator : public BaseBfbsGenerator {
         } else {
           code += "  for i = " + NumToString(field->type()->fixed_length()) +
                   ", 1, -1 do\n";
-          code += "    builder:Prepend" + GenerateMethod(element) + "(" +
+          code += "    builder:Prepend" + GenerateMethod(field->type(), true) + "(" +
                   prefix + namer_.Variable(*field) + "[i])\n";
           code += "  end\n";
         }
       } else {
         code += "  builder:Prepend" +
-                GenerateMethod(field->type()->base_type()) + "(" + prefix +
+                GenerateMethod(field->type()) + "(" + prefix +
                 namer_.Variable(*field) + ")\n";
       }
     });
@@ -567,9 +567,10 @@ class LuaBfbsGenerator : public BaseBfbsGenerator {
     return code;
   }
 
-  std::string GenerateMethod(const r::BaseType base_type) const {
+  std::string GenerateMethod(const r::Type *type, bool element = false) const {
+    const r::BaseType base_type = element ? type->element() : type->base_type();
     if (IsScalar(base_type)) { return namer_.Method(GenerateType(base_type)); }
-    if (IsStructOrTable(base_type)) { return "Struct"; }
+    if (IsStruct(type, element)) { return "Struct"; }
     return "UOffsetTRelative";
   }
 
