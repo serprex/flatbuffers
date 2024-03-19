@@ -584,7 +584,7 @@ FlatCOptions FlatCompiler::ParseFromCommandLineArguments(int argc,
       } else if (arg == "-M") {
         options.print_make_rules = true;
       } else if (arg == "--version") {
-        printf("flatc version %s\n", FLATC_VERSION());
+        printf("erpre flatc version %s\n", FLATC_VERSION());
         exit(0);
       } else if (arg == "--help" || arg == "-h") {
         printf("%s\n", GetUsageString(options.program_name).c_str());
